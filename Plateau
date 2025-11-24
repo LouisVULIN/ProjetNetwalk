@@ -1,35 +1,48 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package netwalk;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  *
  * @author lvulin
  */
-public class Tuile {
-
-    private int code;
-    private boolean feuille;
-    private boolean serveur;
-    private boolean visitee;
-
-    public Tuile(int code, boolean feuille, boolean serveur, boolean visitee) {
-        this.code = code;
-        this.feuille = feuille;
-        this.serveur = serveur;
-        this.visitee = visitee;
-    }
-
-    public void rotationDroite() {
-        this.code = this.code * 2;
-        if (this.code > 15) {
-            this.code = (this.code & 15) + 1;
+public class Plateau {
+    private Tuile plateau[][];
+    private int dimensionL;
+    private int dimensionC;
+    private int xServeur;
+    private int yServeur;
+    
+    public Plateau(String nomFichier){
+        //LIRE FICHIER
+        try {
+            BufferedReader fichier = new BufferedReader(new FileReader(nomFichier));
+            String ligne;
+            ligne = fichier.readLine(); //ton nb de lignes
+            this.dimensionL = Integer.parseInt("ligne");
+            
+            ligne = fichier.readLine(); //ton nb de colonnes
+            this.dimensionC = Integer.parseInt("ligne");
+            
+            ligne = fichier.readLine(); //ton nb de colonnes
+            this.dimensionC = Integer.parseInt("ligne");
+            
+            while (fichier.ready()) {
+                
+                ligne = fichier.readLine();
+                System.out.println(ligne); //TODO ICI
+            }
+            fichier.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        
+        //INIT PLATEAU
+        this.plateau = new Tuile[0][0];
     }
-
-    public void rotationGauche() {
-        this.code = this.code / 2;
-        int ajout = this.code ^ 14; 
-        if (ajout==1 ){
-            this.code = (this.code & 7) + 8;
-        }
-    }
-}
