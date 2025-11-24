@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+package netwalk;
 
 /**
  *
@@ -30,7 +27,8 @@ public class Tuile {
 
     public void rotationGauche() {
         this.code = this.code / 2;
-        if (this.code & int 1==1){
+        int ajout = this.code ^ 14; 
+        if (ajout==1 ){
             this.code = (this.code & 7) + 8;
         }
     }
