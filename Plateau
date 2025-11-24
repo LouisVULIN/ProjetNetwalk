@@ -1,0 +1,35 @@
+package netwalk;
+
+/**
+ *
+ * @author lvulin
+ */
+public class Tuile {
+
+    private int code;
+    private boolean feuille;
+    private boolean serveur;
+    private boolean visitee;
+
+    public Tuile(int code, boolean feuille, boolean serveur, boolean visitee) {
+        this.code = code;
+        this.feuille = feuille;
+        this.serveur = serveur;
+        this.visitee = visitee;
+    }
+
+    public void rotationDroite() {
+        this.code = this.code * 2;
+        if (this.code > 15) {
+            this.code = (this.code & 15) + 1;
+        }
+    }
+
+    public void rotationGauche() {
+        this.code = this.code / 2;
+        int ajout = this.code ^ 14; 
+        if (ajout==1 ){
+            this.code = (this.code & 7) + 8;
+        }
+    }
+}
