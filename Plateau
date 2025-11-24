@@ -30,7 +30,11 @@ public class Plateau {
             ligne = fichier.readLine(); //ton nb de colonnes
             this.dimensionC = Integer.parseInt("ligne");
             
-            ligne = fichier.readLine(); //ton nb de colonnes
+            ligne = fichier.readLine();//ton nb de colonnes
+            
+            String champs[] = ligne.split(",");
+            int source1=champs[0];
+            int source2= champs[1]
             this.dimensionC = Integer.parseInt("ligne");
             
             while (fichier.ready()) {
@@ -44,5 +48,6 @@ public class Plateau {
         }
         
         //INIT PLATEAU
-        this.plateau = new Tuile[0][0];
+        this.plateau = new Tuile[this.dimensionL][this.dimensionC];
     }
+
