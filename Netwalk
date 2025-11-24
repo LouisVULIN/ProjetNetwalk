@@ -1,0 +1,37 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package netwalk;
+
+/**
+ *
+ * @author lvulin
+ */
+public class Netwalk {
+    private Tuile [] plateau;
+    private int dimensionL;
+    private int dimensionC;
+    private int xServeur;
+    private int yServeur;
+    public Netwalk(int dimensionL, int dimensionC, int xServeur, int yServeur){
+        this.dimensionL = dimensionL;
+        this.dimensionC = dimensionC;
+        this.xServeur = xServeur;
+        this.yServeur = yServeur;
+    }
+ public void lectureTexte(){
+    try{
+        BufferedReader fichier = new BufferedReader (new FileReader("MiniNetWalk.txt"));
+        while (fichier.ready()) {
+            String ligne;
+            ligne = fichier.readlines();
+            System.out.println(ligne);    
+        }
+        fichier.close();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+    }
+   }
