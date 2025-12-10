@@ -7,6 +7,7 @@ package netwalk;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import Outils.Data;
 
 /**
  *
@@ -67,6 +68,8 @@ public class Plateau {
             e.printStackTrace();
         }
     }
+
+   
     public Tuile getTuile(int ligne, int colonne) {
         if (ligne >= 0 && ligne < dimensionL && colonne >= 0 && colonne < dimensionC) {
             return this.plateau[ligne][colonne];
@@ -78,4 +81,16 @@ public class Plateau {
     public int getDimensionC() { return dimensionC; }
     public int getXServeur() { return xServeur; }
     public int getYServeur() { return yServeur; }
+    
+     @Override
+    public String toString() {
+       
+        
+        // Ligne supérieure
+        String str = Data.asciiGraphic[6];
+        for (int i = 0; i < this.dimensionL; i++) {
+            str += Data.asciiGraphic[10]; // Ligne horizontale
+        }
+        str += Data.asciiGraphic[12]; // Coin supérieur droit
+    }
 }
