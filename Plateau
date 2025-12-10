@@ -92,5 +92,19 @@ public class Plateau {
             str += Data.asciiGraphic[10]; // Ligne horizontale
         }
         str += Data.asciiGraphic[12]; // Coin supérieur droit
+        // Lignes intermédiaires
+        str += Data.asciiGraphic[5];
+        for (int k = 0; k < this.dimensionC; k++){
+            for (int i = 0; i < this.dimensionL; i++) {
+                str += Data.asciiGraphic[//symbole associé a la case de la premiere ligne
+                    ];
+                str+=Data.asciiGraphic[5];}
+        }
+        // Ligne inférieure
+        str += Data.asciiGraphic[3];
+        for (int i = 0; i < this.dimensionL; i++) {
+            str += Data.asciiGraphic[9]; // Ligne horizontale
+        }
+        return str;
     }
 }
