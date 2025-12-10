@@ -34,7 +34,7 @@ public class Plateau {
             
             String champs[] = ligne.split(",");
             int source1=champs[0];
-            int source2= champs[1]
+            int source2= champs[1];
             this.dimensionC = Integer.parseInt("ligne");
             
             while (fichier.ready()) {
@@ -50,4 +50,6 @@ public class Plateau {
         //INIT PLATEAU
         this.plateau = new Tuile[this.dimensionL][this.dimensionC];
     }
+    
+
 
