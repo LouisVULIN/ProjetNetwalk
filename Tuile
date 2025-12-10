@@ -31,38 +31,42 @@ public class Tuile {
         if (ajout==1 ){
             this.code = (this.code & 7) + 8;
         }
-    }
-  public String toString() {
+    
+    @Override
+      public String toString() {
         if(this.code == 1){
-        String str = Data.asciiGraphic[1];}
+        return Data.asciiGraphic[1];}
         if(this.code == 2){
-        String str = Data.asciiGraphic[2];}
+        return str = Data.asciiGraphic[2];}
         if(this.code == 3){
-        String str = Data.asciiGraphic[3];}
+        return str = Data.asciiGraphic[3];}
         if(this.code == 4){
-        String str = Data.asciiGraphic[4];}
+        return str = Data.asciiGraphic[4];}
         if(this.code == 5){
-        String str = Data.asciiGraphic[5];}
+        return str = Data.asciiGraphic[5];}
         if(this.code == 6){
-        String str = Data.asciiGraphic[6];}
+        return str = Data.asciiGraphic[6];}
         if(this.code == 7){
-        String str = Data.asciiGraphic[7];}
+        return str = Data.asciiGraphic[7];}
         if(this.code == 8){
-        String str = Data.asciiGraphic[8];}
+        return str = Data.asciiGraphic[8];}
         if(this.code == 9){
-        String str = Data.asciiGraphic[9];}
+        return str = Data.asciiGraphic[9];}
         if(this.code == 10){
-        String str = Data.asciiGraphic[10];}
+        return str = Data.asciiGraphic[10];}
         if(this.code == 11){
-        String str = Data.asciiGraphic[11];}
+        return str = Data.asciiGraphic[11];}
         if(this.code == 12){
-        String str = Data.asciiGraphic[12];}
+        return str = Data.asciiGraphic[12];}
         if(this.code == 13){
-        String str = Data.asciiGraphic[13];}
+        return str = Data.asciiGraphic[13];}
         if(this.code == 14){
-        String str = Data.asciiGraphic[14];}
+        return str = Data.asciiGraphic[14];}
         if(this.code == 15){
-        String str = Data.asciiGraphic[15];}
-        
+        return str = Data.asciiGraphic[15];}
+       
     }
 }
+        
+
+           
