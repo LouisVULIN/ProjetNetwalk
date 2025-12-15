@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package netwalk;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,44 +31,40 @@ public class Plateau {
 
             // Nombre de lignes
             ligne = fichier.readLine();
-            this.dimensionL = Integer.parseInt(ligne.trim());
+            this.dimensionL = Integer.parseInt(ligne);
 
             //Nombre de colonnes
             ligne = fichier.readLine();
-            this.dimensionC = Integer.parseInt(ligne.trim());
+            this.dimensionC = Integer.parseInt(ligne);
 
             //Position du Serveur
             ligne = fichier.readLine();
             String champsServeur[] = ligne.split(",");
-            this.xServeur = Integer.parseInt(champsServeur[0].trim());
-            this.yServeur = Integer.parseInt(champsServeur[1].trim());
+            this.xServeur = Integer.parseInt(champsServeur[0]);
+            this.yServeur = Integer.parseInt(champsServeur[1]);
 
             //Initialiser le tableau de tuiles
             this.plateau = new Tuile[this.dimensionL][this.dimensionC];
             
             //Lire les données des tuiles et remplir le plateau
-            int compteurLigne = 0;
-            while (compteurLigne < this.dimensionL && (ligne = fichier.readLine()) != null) {
-                String champsTuiles[] = ligne.split(",");
-                
-                for (int colonne = 0; colonne < this.dimensionC && colonne < champsTuiles.length; colonne++) {
-                    String typeTuile = champsTuiles[colonne].trim();
-                    
+            for (int i=0; i<dimensionL;i++){
+                ligne = fichier.readLine();
+                String champsTuiles[] = ligne.split(";");
+                int j =0;
+                for(String c : champsTuiles){                    
                     // Création de la tuile
-                    this.plateau[compteurLigne][colonne] = new Tuile(typeTuile); 
+                    this.plateau[i][j] = new Tuile(Integer.parseInt(c)); 
+                    j++;
                 }
-                
-                compteurLigne++;
-            }
+        }
 
         } catch (IOException | NumberFormatException e) {
 
             System.err.println("Erreur lors de la lecture ou du parsing du fichier : " + nomFichier);
-            e.printStackTrace();
         }
     }
 
-   
+    //Getters
     public Tuile getTuile(int ligne, int colonne) {
         if (ligne >= 0 && ligne < dimensionL && colonne >= 0 && colonne < dimensionC) {
             return this.plateau[ligne][colonne];
@@ -82,29 +77,42 @@ public class Plateau {
     public int getXServeur() { return xServeur; }
     public int getYServeur() { return yServeur; }
     
+    
      @Override
     public String toString() {
-       
-        
-        // Ligne supérieure
-        String str = Data.asciiGraphic[6];
-        for (int i = 0; i < this.dimensionL; i++) {
-            str += Data.asciiGraphic[10]; // Ligne horizontale
+        //Ligne numéro de colonne
+        String str = "  ";
+        for (int c=0; c<(this.dimensionC); c++) {
+        str+= "   ";
+        str += c;
         }
-        str += Data.asciiGraphic[12]; // Coin supérieur droit
+        System.out.println(str);
+        // Ligne supérieureString
+        str = "  ";
+        str += Data.asciiGraphic[6];
+        for (int i = 0; i < (this.dimensionL+1); i++) {
+            str += Data.asciiGraphic[10]; 
+        }
+        str += Data.asciiGraphic[12];
+        System.out.println(str);
         // Lignes intermédiaires
-        str += Data.asciiGraphic[5];
-        for (int k = 0; k < this.dimensionC; k++){
-            for (int i = 0; i < this.dimensionL; i++) {
-                str += Data.asciiGraphic[//symbole associé a la case de la premiere ligne
-                    ];
-                str+=Data.asciiGraphic[5];}
-        }
+        for (int i = 0; i < this.dimensionL; i++){
+            str = " " ;
+            str += i;
+            str += Data.asciiGraphic[5];
+            for (int k = 0; k< this.dimensionC; k++) {
+                str += Data.asciiGraphic[this.plateau[i][k].getCode()];}
+            str+=Data.asciiGraphic[5];
+            System.out.println(str);}
+        
         // Ligne inférieure
+        str = "  ";
         str += Data.asciiGraphic[3];
-        for (int i = 0; i < this.dimensionL; i++) {
-            str += Data.asciiGraphic[9]; // Ligne horizontale
+        for (int i = 0; i < (this.dimensionL+1); i++) {
+            str += Data.asciiGraphic[10]; 
         }
-        return str;
+        str += Data.asciiGraphic[9];
+        System.out.println(str);
+        return ("Bonne chance :" );
     }
 }
