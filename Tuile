@@ -1,5 +1,7 @@
 package netwalk;
 
+import Outils.Data;
+
 /**
  *
  * @author lvulin
@@ -7,6 +9,42 @@ package netwalk;
 public class Tuile {
 
     private int code;
+
+    Tuile(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public boolean isFeuille() {
+        return feuille;
+    }
+
+    public void setFeuille(boolean feuille) {
+        this.feuille = feuille;
+    }
+
+    public boolean isServeur() {
+        return serveur;
+    }
+
+    public void setServeur(boolean serveur) {
+        this.serveur = serveur;
+    }
+
+    public boolean isVisitee() {
+        return visitee;
+    }
+
+    public void setVisitee(boolean visitee) {
+        this.visitee = visitee;
+    }
     private boolean feuille;
     private boolean serveur;
     private boolean visitee;
@@ -25,48 +63,38 @@ public class Tuile {
         }
     }
 
-    public void rotationGauche() {
+    public void rotationGauche() 
+    {
         this.code = this.code / 2;
-        int ajout = this.code ^ 14; 
-        if (ajout==1 ){
+        int ajout = this.code ^ 14;
+        if (ajout == 1) {
             this.code = (this.code & 7) + 8;
         }
+    }
     
     @Override
-      public String toString() {
-        if(this.code == 1){
-        return Data.asciiGraphic[1];}
-        if(this.code == 2){
-        return str = Data.asciiGraphic[2];}
-        if(this.code == 3){
-        return str = Data.asciiGraphic[3];}
-        if(this.code == 4){
-        return str = Data.asciiGraphic[4];}
-        if(this.code == 5){
-        return str = Data.asciiGraphic[5];}
-        if(this.code == 6){
-        return str = Data.asciiGraphic[6];}
-        if(this.code == 7){
-        return str = Data.asciiGraphic[7];}
-        if(this.code == 8){
-        return str = Data.asciiGraphic[8];}
-        if(this.code == 9){
-        return str = Data.asciiGraphic[9];}
-        if(this.code == 10){
-        return str = Data.asciiGraphic[10];}
-        if(this.code == 11){
-        return str = Data.asciiGraphic[11];}
-        if(this.code == 12){
-        return str = Data.asciiGraphic[12];}
-        if(this.code == 13){
-        return str = Data.asciiGraphic[13];}
-        if(this.code == 14){
-        return str = Data.asciiGraphic[14];}
-        if(this.code == 15){
-        return str = Data.asciiGraphic[15];}
-       
+    public String toString(){
+// Dans la classe Tuile
+        return switch (this.code) {
+            case 1 -> Data.asciiGraphic[1];
+            case 2 -> Data.asciiGraphic[2];
+            case 3 -> Data.asciiGraphic[3];
+            case 4 -> Data.asciiGraphic[4];
+            case 5 -> Data.asciiGraphic[5];
+            case 6 -> Data.asciiGraphic[6];
+            case 7 -> Data.asciiGraphic[7];
+            case 8 -> Data.asciiGraphic[8];
+            case 9 -> Data.asciiGraphic[9];
+            case 10 -> Data.asciiGraphic[10];
+            case 11 -> Data.asciiGraphic[11];
+            case 12 -> Data.asciiGraphic[12];
+            case 13 -> Data.asciiGraphic[13];
+            case 14 -> Data.asciiGraphic[14];
+            case 15 -> Data.asciiGraphic[15];
+            default -> " ";
+        };
     }
+
 }
-        
 
            
