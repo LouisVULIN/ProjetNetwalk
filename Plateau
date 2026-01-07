@@ -116,3 +116,131 @@ public class Plateau {
         return ("Bonne chance :" );
     }
 }
+
+/**
+     * Vérifie si la partie est gagnée.
+     * Critères : Toutes les tuiles (non vides) sont connectées au serveur (visitées)
+     * ET aucune tuile n'a de connexion ouverte vers le vide (pas de fuites).
+     */
+    public boolean estFini() {
+        // 1. Réinitialiser l'état 'visitee' de toutes les tuiles
+        for (int i = 0; i < dimensionL; i++) {
+            for (int j = 0; j < dimensionC; j++) {
+                if (plateau[i][j] != null) {
+                    plateau[i][j].setVisitee(false);
+                }
+            }
+        }
+
+        // 2. Lancer le parcours en profondeur (DFS) depuis le serveur
+        // On suppose ici que xServeur est la Ligne et yServeur la Colonne 
+        // (selon l'ordre de lecture dans le constructeur : plateau[i][j])
+        dfs(xServeur, yServeur);
+
+        // 3. Vérification globale
+        for (int i = 0; i < dimensionL; i++) {
+            for (int j = 0; j < dimensionC; j++) {
+                Tuile t = plateau[i][j];
+                
+                // Si la tuile est vide (code 0), on l'ignore
+                if (t == null || t.getCode() == 0) continue;
+
+                // Condition A : Si une tuile n'est pas visitée, le réseau est coupé
+                if (!t.isVisitee()) {
+                    return false;
+                }
+
+                // Condition B : Vérifier s'il y a des "fuites" (connexions vers le vide)
+                // Même si la tuile est visitée, elle ne doit pas pointer vers un mur ou une tuile fermée
+                if (aDesFuites(i, j, t.getCode())) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Algorithme récursif de Parcours en Profondeur (DFS).
+     */
+    private void dfs(int l, int c) {
+        // Vérification des bornes
+        if (l < 0 || l >= dimensionL || c < 0 || c >= dimensionC) return;
+        
+        Tuile actuelle = plateau[l][c];
+        if (actuelle == null || actuelle.isVisitee()) return;
+
+        // Marquer la tuile comme visitée
+        actuelle.setVisitee(true);
+
+        int code = actuelle.getCode();
+
+        // Masques binaires supposés : 1=Haut, 2=Droite, 4=Bas, 8=Gauche
+        
+        // Vers HAUT (1) - Voisin doit avoir BAS (4)
+        if ((code & 1) != 0) {
+            if (l > 0 && (plateau[l-1][c].getCode() & 4) != 0) {
+                dfs(l - 1, c);
+            }
+        }
+
+        // Vers DROITE (2) - Voisin doit avoir GAUCHE (8)
+        if ((code & 2) != 0) {
+            if (c < dimensionC - 1 && (plateau[l][c+1].getCode() & 8) != 0) {
+                dfs(l, c + 1);
+            }
+        }
+
+        // Vers BAS (4) - Voisin doit avoir HAUT (1)
+        if ((code & 4) != 0) {
+            if (l < dimensionL - 1 && (plateau[l+1][c].getCode() & 1) != 0) {
+                dfs(l + 1, c);
+            }
+        }
+
+        // Vers GAUCHE (8) - Voisin doit avoir DROITE (2)
+        if ((code & 8) != 0) {
+            if (c > 0 && (plateau[l][c-1].getCode() & 2) != 0) {
+                dfs(l, c - 1);
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Vérifie si une tuile pointe vers quelque chose d'invalide (Mur ou voisin non connecté).
+     */
+    private boolean aDesFuites(int l, int c, int code) {
+        // Vérifie HAUT (1)
+        if ((code & 1) != 0) {
+            // Si on est au bord ou si le voisin n'a pas la connexion opposée (BAS=4)
+            if (l == 0 || (plateau[l-1][c].getCode() & 4) == 0) return true;
+        }
+
+        // Vérifie DROITE (2)
+        if ((code & 2) != 0) {
+            // Si on est au bord ou si le voisin n'a pas la connexion opposée (GAUCHE=8)
+            if (c == dimensionC - 1 || (plateau[l][c+1].getCode() & 8) == 0) return true;
+        }
+
+        // Vérifie BAS (4)
+        if ((code & 4) != 0) {
+            // Si on est au bord ou si le voisin n'a pas la connexion opposée (HAUT=1)
+            if (l == dimensionL - 1 || (plateau[l+1][c].getCode() & 1) == 0) return true;
+        }
+
+        // Vérifie GAUCHE (8)
+        if ((code & 8) != 0) {
+            // Si on est au bord ou si le voisin n'a pas la connexion opposée (DROITE=2)
+            if (c == 0 || (plateau[l][c-1].getCode() & 2) == 0) return true;
+        }
