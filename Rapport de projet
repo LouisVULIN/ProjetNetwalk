@@ -1,0 +1,15 @@
+________________________________________
+Rapport de Projet : NetWalk
+Louis VULIN / Axel SCHWARTZ 
+
+Plan :
+I.	Introduction
+II.	Présentation générale du projet
+III.	Instance d’exécution
+IV.	Détails des algorithmes
+V.	Tests
+VI.	Critiques et perspectives
+VII.	Conclusion
+I.	Introduction
+Implémentation d’un jeu type Netwalk avec optimisation de la représentation des tuiles du plateau en Java, lecture et transcription d’un fichier en plateau jouable, Algorithmes de parcours en profondeur visant  la génération d’un jeu terminable et vérification permanente de l’état du jeu en cours, création d’une interface graphique et d’un joueur automatique.
+________________________________________
