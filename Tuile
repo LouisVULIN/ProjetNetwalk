@@ -3,52 +3,32 @@ package netwalk;
 import Outils.Data;
 
 /**
- *
- * @author lvulin
+ * Représente une case (Tuile) du plateau de jeu Netwalk.
+ * Contient l'état de la tuyauterie et gère l'affichage.
+ * * @author lvulin
  */
 public class Tuile {
 
-    private int code;
+    private int code;           // Configuration binaire des connexions (1=N, 2=E, 4=S, 8=O)
+    private boolean feuille;    // Vrai si la tuile est un terminal (1 seule connexion)
+    private boolean serveur;    // Vrai si la tuile est la source
+    private boolean visitee;    // Utilisé pour les algorithmes de parcours
 
-    Tuile(int code) {
-        this.code = code;
+    /**
+     * Constructeur par défaut.
+     * @param code Configuration initiale des connexions.
+     */
+    public Tuile(int code) {
+        this(code, false, false, false);
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public boolean isFeuille() {
-        return feuille;
-    }
-
-    public void setFeuille(boolean feuille) {
-        this.feuille = feuille;
-    }
-
-    public boolean isServeur() {
-        return serveur;
-    }
-
-    public void setServeur(boolean serveur) {
-        this.serveur = serveur;
-    }
-
-    public boolean isVisitee() {
-        return visitee;
-    }
-
-    public void setVisitee(boolean visitee) {
-        this.visitee = visitee;
-    }
-    private boolean feuille;
-    private boolean serveur;
-    private boolean visitee;
-
+    /**
+     * Constructeur complet.
+     * @param code Configuration des connexions.
+     * @param feuille Est un terminal.
+     * @param serveur Est la source.
+     * @param visitee A été visitée.
+     */
     public Tuile(int code, boolean feuille, boolean serveur, boolean visitee) {
         this.code = code;
         this.feuille = feuille;
@@ -56,45 +36,56 @@ public class Tuile {
         this.visitee = visitee;
     }
 
+    // --- Getters et Setters ---
+
+    public int getCode() { return code; }
+    public void setCode(int code) { this.code = code; }
+
+    public boolean isFeuille() { return feuille; }
+    public void setFeuille(boolean feuille) { this.feuille = feuille; }
+
+    public boolean isServeur() { return serveur; }
+    public void setServeur(boolean serveur) { this.serveur = serveur; }
+
+    public boolean isVisitee() { return visitee; }
+    public void setVisitee(boolean visitee) { this.visitee = visitee; }
+
+    // --- Méthodes Métier ---
+
+    /**
+     * Effectue une rotation de 90 degrés vers la droite (sens horaire).
+     * Les connexions sont décalées : N->E, E->S, S->O, O->N.
+     */
     public void rotationDroite() {
-        this.code = this.code * 2;
-        if (this.code > 15) {
-            this.code = (this.code & 15) + 1;
-        }
+        // Le bit de poids fort (8=Ouest) doit devenir le bit de poids faible (1=Nord)
+        int bitOuest = (code & 8) != 0 ? 1 : 0;
+        // Décalage à gauche des autres bits et masque pour rester sur 4 bits (15 = 1111)
+        this.code = ((code << 1) & 15) | bitOuest;
     }
 
-    public void rotationGauche() 
-    {
-        this.code = this.code / 2;
-        int ajout = this.code ^ 14;
-        if (ajout == 1) {
-            this.code = (this.code & 7) + 8;
-        }
+    /**
+     * Effectue une rotation de 90 degrés vers la gauche (sens anti-horaire).
+     */
+    public void rotationGauche() {
+        // Le bit de poids faible (1=Nord) doit devenir le bit de poids fort (8=Ouest)
+        int bitNord = (code & 1) != 0 ? 8 : 0;
+        this.code = (code >> 1) | bitNord;
     }
-    
+
     @Override
-    public String toString(){
-// Dans la classe Tuile
-        return switch (this.code) {
-            case 1 -> Data.asciiGraphic[1];
-            case 2 -> Data.asciiGraphic[2];
-            case 3 -> Data.asciiGraphic[3];
-            case 4 -> Data.asciiGraphic[4];
-            case 5 -> Data.asciiGraphic[5];
-            case 6 -> Data.asciiGraphic[6];
-            case 7 -> Data.asciiGraphic[7];
-            case 8 -> Data.asciiGraphic[8];
-            case 9 -> Data.asciiGraphic[9];
-            case 10 -> Data.asciiGraphic[10];
-            case 11 -> Data.asciiGraphic[11];
-            case 12 -> Data.asciiGraphic[12];
-            case 13 -> Data.asciiGraphic[13];
-            case 14 -> Data.asciiGraphic[14];
-            case 15 -> Data.asciiGraphic[15];
-            default -> " ";
-        };
+    public String toString() {
+        // Récupération du caractère graphique depuis Outils.Data
+        String representation = (code >= 0 && code < Data.asciiGraphic.length) 
+                                ? Data.asciiGraphic[code] 
+                                : "   ";
+
+        // Application des couleurs selon l'état de la tuile
+        if (serveur) {
+            return Data.RED + representation + Data.RESET;
+        }
+        if (feuille) {
+            return Data.BLUE + representation + Data.RESET;
+        }
+        return representation;
     }
-
 }
-
-           
