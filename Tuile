@@ -2,33 +2,19 @@ package netwalk;
 
 import Outils.Data;
 
-/**
- * Représente une case (Tuile) du plateau de jeu Netwalk.
- * Contient l'état de la tuyauterie et gère l'affichage.
- * * @author lvulin
- */
+//Représente une tuile du plateau
 public class Tuile {
 
-    private int code;           // Configuration binaire des connexions (1=N, 2=E, 4=S, 8=O)
-    private boolean feuille;    // Vrai si la tuile est un terminal (1 seule connexion)
-    private boolean serveur;    // Vrai si la tuile est la source
-    private boolean visitee;    // Utilisé pour les algorithmes de parcours
+    private int code;           
+    private boolean feuille;    
+    private boolean serveur;    
+    private boolean visitee;    
 
-    /**
-     * Constructeur par défaut.
-     * @param code Configuration initiale des connexions.
-     */
     public Tuile(int code) {
         this(code, false, false, false);
     }
 
-    /**
-     * Constructeur complet.
-     * @param code Configuration des connexions.
-     * @param feuille Est un terminal.
-     * @param serveur Est la source.
-     * @param visitee A été visitée.
-     */
+
     public Tuile(int code, boolean feuille, boolean serveur, boolean visitee) {
         this.code = code;
         this.feuille = feuille;
@@ -36,7 +22,6 @@ public class Tuile {
         this.visitee = visitee;
     }
 
-    // --- Getters et Setters ---
 
     public int getCode() { return code; }
     public void setCode(int code) { this.code = code; }
@@ -50,12 +35,7 @@ public class Tuile {
     public boolean isVisitee() { return visitee; }
     public void setVisitee(boolean visitee) { this.visitee = visitee; }
 
-    // --- Méthodes Métier ---
-
-    /**
-     * Effectue une rotation de 90 degrés vers la droite (sens horaire).
-     * Les connexions sont décalées : N->E, E->S, S->O, O->N.
-     */
+    // --- Méthodes pour les rotations
     public void rotationDroite() {
         // Le bit de poids fort (8=Ouest) doit devenir le bit de poids faible (1=Nord)
         int bitOuest = (code & 8) != 0 ? 1 : 0;
