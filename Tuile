@@ -1,4 +1,4 @@
-package netwalk;
+package Netwalk;
 
 import Outils.Data;
 
@@ -38,24 +38,23 @@ public class Tuile {
     // --- Méthodes pour les rotations
 
     public void rotationDroite() {
-        int bitOuest = this.code & 8; 
+        int codetuile = this.code & 8; 
         this.code = (this.code << 1) & 15; 
-        if (bitOuest != 0) {
+        if (codetuile != 0) {
             this.code |= 1; 
         }
     }
 
     public void rotationGauche() {
-        int bitNord = this.code & 1;
+        int codetuile = this.code & 1;
         this.code = (this.code >> 1);
-        if (bitNord != 0) {
+        if (codetuile != 0) {
             this.code |= 8;
         }
     }
 
     @Override
     public String toString() {
-        // Récupération du caractère graphique de Outils.Data
         String representation = (code >= 0 && code < Data.asciiGraphic.length) 
                                 ? Data.asciiGraphic[code] 
                                 : "   ";
