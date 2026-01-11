@@ -1,4 +1,4 @@
-package netwalk;
+package Netwalk;
 
 //Defini une position (ligne, colonne) sur le plateau.
 
