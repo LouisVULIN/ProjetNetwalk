@@ -1,19 +1,12 @@
 package netwalk;
 
-/**
- * Représente une position (ligne, colonne) dans la grille.
- * @author lvulin
- */
+//Defini une position (ligne, colonne) sur le plateau.
+
 public class Coordonées {
     
     private int ligne;
     private int colonne;
 
-    /**
-     * Constructeur de coordonnées.
-     * @param ligne Indice de la ligne.
-     * @param colonne Indice de la colonne.
-     */
     public Coordonées(int ligne, int colonne) {
         this.ligne = ligne;
         this.colonne = colonne;
