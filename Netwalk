@@ -2,22 +2,15 @@ package netwalk;
 
 import java.util.Scanner;
 
-/**
- * Classe principale de lancement du jeu Netwalk (Mode Console).
- * @author lvulin
- */
+// Classe pour lancer le jeu
 public class Netwalk {
 
-    /**
-     * Point d'entrée du programme.
-     * @param args Arguments de la ligne de commande (non utilisés).
-     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Plateau jeu = null;
 
-        System.out.println("=== NETWALK ===");
-        System.out.println("1. Charger un niveau (Partie 1)");
+        System.out.println("== NETWALK ==");
+        System.out.println("1. Lancer un niveau sur un plateau prédefini (Partie 1)");
         System.out.println("2. Générer un niveau aléatoire (Partie 2)");
         System.out.print("Votre choix : ");
         
@@ -40,10 +33,7 @@ public class Netwalk {
         scanner.close();
     }
 
-    /**
-     * Gère la boucle principale du jeu.
-     * (Méthode extraite pour clarté)
-     */
+    //Gère la boucle pendant le jeu
     private static void boucleDeJeu(Plateau jeu, Scanner scanner) {
         boolean estTermine = false;
         
@@ -51,11 +41,11 @@ public class Netwalk {
             System.out.println("\n" + jeu);
             
             if (jeu.estGagne()) {
-                System.out.println("BRAVO ! Vous avez connecté tout le réseau.");
+                System.out.println("BRAVO ! Vous avez gagné.");
                 estTermine = true;
             } else {
-                System.out.println("Action : Entrez 'Ligne Colonne' pour tourner une tuile (ex: 0 1)");
-                System.out.println("Ou entrez -1 pour quitter.");
+                System.out.println("Entrez 'Ligne Colonne' pour tourner une tuile (ex: 0 1)");
+                System.out.println("Entrez -1 pour quitter.");
                 
                 int ligne = scanner.nextInt();
                 if (ligne == -1) {
