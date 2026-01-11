@@ -1,4 +1,4 @@
-package netwalk;
+package Netwalk;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,300 +7,219 @@ import java.util.ArrayList;
 import java.util.Collections;
 import Outils.Data;
 
-// Classe permettant le chargement, la génération et l'affichage du plateau
-
 public class Plateau {
-    
+
     private Tuile[][] grille;
     private int nbLignes;
     private int nbColonnes;
     private int ligneServeur;
-    private int colServeur;
+    private int colonneServeur;
 
-// Partie 1 : Chargement depuis un fichier
+    // Index pour les déplacement: 0=Nord; 1=Est; 2=Sud; 3=Ouest
+    private final int[] deplacementLigne =   {-1, 0, 1,  0};
+    private final int[] deplacementColonne = { 0, 1, 0, -1};
 
     public Plateau(String nomFichier) {
         chargerFichier(nomFichier);
     }
 
-// Partie 2 : Génération aléatoire du jeu
-
     public Plateau(int nbLignes, int nbColonnes) {
         this.nbLignes = nbLignes;
         this.nbColonnes = nbColonnes;
-        
         initialiserPlateauVide();
         placerServeurAleatoirement();
-        
-        // Algorithme de parcours en profondeur pour génerer le plateau 
-
-        boolean[][] visite = new boolean[nbLignes][nbColonnes];
-        genererParcoursProfondeur(ligneServeur, colServeur, visite);
-        
-        detecterTerminaux();
+        boolean[][] dejaVisite = new boolean[nbLignes][nbColonnes];
+        genererParcoursProfondeur(ligneServeur, colonneServeur, dejaVisite);
+        detecterFeuilles();
         melangerTuiles();
     }
 
-// Méthodes de Chargement et d'Initialisation du plateau
+    // Génération du Plateau (parcours en profondeur)
 
-    // Lit le fichier et initialise le plateau
+    private void genererParcoursProfondeur(int ligneActuelle, int colonneActuelle, boolean[][] dejaVisite) {
+        dejaVisite[ligneActuelle][colonneActuelle] = true;
 
-    private void chargerFichier(String nomFichier) {
-        try (BufferedReader fichier = new BufferedReader(new FileReader(nomFichier))) {
-            lireDimensions(fichier);
-            lirePositionServeur(fichier);
-            remplirGrille(fichier);
-            
-            // Marquer le serveur sur la tuile correspondante
-            if (estDansPlateau(ligneServeur, colServeur)) {
-                grille[ligneServeur][colServeur].setServeur(true);
-            }
-            
-            detecterTerminaux();
-        } catch (Exception e) {
-            System.err.println("Erreur critique lors du chargement : " + e.getMessage());
-        }
-    }
+        ArrayList<Integer> ordreExploration = obtenirDirectionsAleatoires();
 
-    private void lireDimensions(BufferedReader fichier) throws IOException {
-        this.nbLignes = Integer.parseInt(fichier.readLine().trim());
-        this.nbColonnes = Integer.parseInt(fichier.readLine().trim());
-        this.grille = new Tuile[nbLignes][nbColonnes];
-    }
+        for (int directionIndex : ordreExploration) {
+            int ligneVoisin = ligneActuelle + deplacementLigne[directionIndex];
+            int colonneVoisin = colonneActuelle + deplacementColonne[directionIndex];
 
-    private void lirePositionServeur(BufferedReader fichier) throws IOException {
-        String[] coords = fichier.readLine().split(",");
-        // Le fichier donne X,Y. Convention: X=Colonne, Y=Ligne.
-        // On inverse pour correspondre à grille[ligne][colonne].
-        this.colServeur = Integer.parseInt(coords[0].trim()); 
-        this.ligneServeur = Integer.parseInt(coords[1].trim());
-    }
+            if (estDansPlateau(ligneVoisin, colonneVoisin) && !dejaVisite[ligneVoisin][colonneVoisin]) {
+                // On ouvre le passage pour les 2 tuiles
+                passageOuvert(ligneActuelle, colonneActuelle, Data.direction[directionIndex]);
+                passageOuvert(ligneVoisin, colonneVoisin, Data.directionOpposee[directionIndex]);
 
-    private void remplirGrille(BufferedReader fichier) throws IOException {
-        for (int i = 0; i < nbLignes; i++) {
-            String[] valeurs = fichier.readLine().split(";");
-            for (int j = 0; j < nbColonnes; j++) {
-                grille[i][j] = new Tuile(Integer.parseInt(valeurs[j].trim()));
+                genererParcoursProfondeur(ligneVoisin, colonneVoisin, dejaVisite);
             }
         }
     }
 
-    private void initialiserPlateauVide() {
-        this.grille = new Tuile[nbLignes][nbColonnes];
-        for (int i = 0; i < nbLignes; i++) {
-            for (int j = 0; j < nbColonnes; j++) {
-                grille[i][j] = new Tuile(0);
-            }
-        }
-    }
-
-    private void placerServeurAleatoirement() {
-        this.ligneServeur = (int) (Math.random() * nbLignes);
-        this.colServeur = (int) (Math.random() * nbColonnes);
-        this.grille[ligneServeur][colServeur].setServeur(true);
-    }
-
-    // --- Algorithme de Génération (DFS / Parcours Profondeur) ---
-
-    /**
-     * Implémente l'algorithme "visiterPP" décrit dans extraitPL-PP-CC-1.pdf.
-     * Construit l'arbre couvrant (labyrinthe parfait) en connectant les tuiles.
-     * * @param uLigne Ligne du sommet courant u
-     * @param uCol Colonne du sommet courant u
-     * @param visite Tableau des sommets visités
-     */
-    private void genererParcoursProfondeur(int uLigne, int uCol, boolean[][] visite) {
-        // Algorithme: visite[u] <- VRAI
-        visite[uLigne][uCol] = true;
-
-        // On mélange les voisins pour garantir l'aléatoire (spécifique au jeu)
-        ArrayList<Integer> directions = obtenirDirectionsAleatoires();
-
-        // Pour chaque sommet v voisin de u faire
-        for (int dirIndex : directions) {
-            int dirValeur = Data.direction[dirIndex]; // 1, 2, 4 ou 8
-            
-            // Calculer coordonnées de v
-            int vLigne = uLigne;
-            int vCol = uCol;
-            
-            if (dirValeur == 1) vLigne--;      // Nord
-            else if (dirValeur == 2) vCol++;   // Est
-            else if (dirValeur == 4) vLigne++; // Sud
-            else if (dirValeur == 8) vCol--;   // Ouest
-
-            // Si v existe ET visite[v] = FAUX alors
-            if (estDansPlateau(vLigne, vCol) && !visite[vLigne][vCol]) {
-                
-                // pere[v] <- u 
-                // Dans Netwalk, cette relation "père" se matérialise par une connexion (ouverture de mur)
-                ouvrirMur(uLigne, uCol, dirValeur);
-                ouvrirMur(vLigne, vCol, Data.directionOpposee[dirIndex]);
-
-                // appel récursif: visiterPP(G, v)
-                genererParcoursProfondeur(vLigne, vCol, visite);
-            }
-        }
-    }
-
-    private void ouvrirMur(int l, int c, int direction) {
-        int ancienCode = grille[l][c].getCode();
-        grille[l][c].setCode(ancienCode | direction);
-    }
-
-    private ArrayList<Integer> obtenirDirectionsAleatoires() {
-        ArrayList<Integer> dirs = new ArrayList<>();
-        dirs.add(0); // Index pour Nord
-        dirs.add(1); // Index pour Est
-        dirs.add(2); // Index pour Sud
-        dirs.add(3); // Index pour Ouest
-        Collections.shuffle(dirs);
-        return dirs;
-    }
-
-    // --- Logique du Jeu ---
-
-    /**
-     * Identifie les feuilles (terminaux) pour l'affichage en bleu.
-     * Une feuille a exactement une connexion et n'est pas le serveur.
-     */
-    private void detecterTerminaux() {
-        for (int i = 0; i < nbLignes; i++) {
-            for (int j = 0; j < nbColonnes; j++) {
-                int code = grille[i][j].getCode();
-                boolean estExtremite = (code == 1 || code == 2 || code == 4 || code == 8);
-                
-                if (estExtremite && !grille[i][j].isServeur()) {
-                    grille[i][j].setFeuille(true);
-                } else {
-                    grille[i][j].setFeuille(false);
-                }
-            }
-        }
-    }
-
-    private void melangerTuiles() {
-        for (int i = 0; i < nbLignes; i++) {
-            for (int j = 0; j < nbColonnes; j++) {
-                int nbRotations = (int) (Math.random() * 4);
-                for (int k = 0; k < nbRotations; k++) {
-                    grille[i][j].rotationDroite();
-                }
-            }
-        }
-    }
-
-    public void tournerTuile(int ligne, int colonne) {
-        if (estDansPlateau(ligne, colonne)) {
-            grille[ligne][colonne].rotationDroite();
-        }
-    }
-
-    /**
-     * Vérifie si le joueur a gagné (toutes les tuiles sont connectées au serveur).
-     * Utilise un parcours simple pour vérifier la connectivité.
-     * @return true si le jeu est fini.
-     */
+    // Algorithme de vérification (Victoire ou non)
+        
+    // Vérifie si le joueur a gagné
     public boolean estGagne() {
-        resetVisites();
-        parcoursVerification(ligneServeur, colServeur);
-        return toutesTuilesVisitees();
+        reinitialiseTuilesVisitees();
+        parcoursVerification(ligneServeur, colonneServeur);
+        return pilesTuilesVisitees();
     }
 
-    private void parcoursVerification(int l, int c) {
-        grille[l][c].setVisitee(true);
-        Tuile t = grille[l][c];
+    private void parcoursVerification(int ligneActuelle, int colonneActuelle) {
+        grille[ligneActuelle][colonneActuelle].setVisitee(true);
+        Tuile tuileActuelle = grille[ligneActuelle][colonneActuelle];
 
-        // Vérification récursive des connexions (Nord, Est, Sud, Ouest)
-        // Nord
-        if ((t.getCode() & 1) != 0 && l > 0) {
-            Tuile voisin = grille[l - 1][c];
-            if ((voisin.getCode() & 4) != 0 && !voisin.isVisitee()) parcoursVerification(l - 1, c);
-        }
-        // Est
-        if ((t.getCode() & 2) != 0 && c < nbColonnes - 1) {
-            Tuile voisin = grille[l][c + 1];
-            if ((voisin.getCode() & 8) != 0 && !voisin.isVisitee()) parcoursVerification(l, c + 1);
-        }
-        // Sud
-        if ((t.getCode() & 4) != 0 && l < nbLignes - 1) {
-            Tuile voisin = grille[l + 1][c];
-            if ((voisin.getCode() & 1) != 0 && !voisin.isVisitee()) parcoursVerification(l + 1, c);
-        }
-        // Ouest
-        if ((t.getCode() & 8) != 0 && c > 0) {
-            Tuile voisin = grille[l][c - 1];
-            if ((voisin.getCode() & 2) != 0 && !voisin.isVisitee()) parcoursVerification(l, c - 1);
-        }
-    }
+        // On teste les 4 directions possibles (de 0 à 3)
+        for (int i = 0; i < 4; i++) {
+            int direction = Data.direction[i];
 
-    private void resetVisites() {
-        for (int i = 0; i < nbLignes; i++) {
-            for (int j = 0; j < nbColonnes; j++) {
-                grille[i][j].setVisitee(false);
+            // Est ce que la tuile actuelle a une sortie dans la direction
+            if ((tuileActuelle.getCode() & direction) != 0) {
+                int ligneVoisin = ligneActuelle + deplacementLigne[i];
+                int colonneVoisin = colonneActuelle + deplacementColonne[i];
+
+                if (estDansPlateau(ligneVoisin, colonneVoisin)) {
+                    Tuile voisin = grille[ligneVoisin][colonneVoisin];
+                    int directionOpposee = Data.dirOpp(direction);
+
+                    // Est ce que voisin a une entrée dans la direction opposée et n'est pas visité
+                    if ((voisin.getCode() & directionOpposee) != 0 && !voisin.isVisitee()) {
+                        parcoursVerification(ligneVoisin, colonneVoisin);
+                    }
+                }
             }
         }
     }
 
-    private boolean toutesTuilesVisitees() {
-        for (int i = 0; i < nbLignes; i++) {
-            for (int j = 0; j < nbColonnes; j++) {
-                if (!grille[i][j].isVisitee()) return false;
-            }
-        }
-        return true;
+    // Méthodes algorithme récursif
+
+    private void passageOuvert(int l, int c, int direction) {
+        grille[l][c].setCode(grille[l][c].getCode() | direction);
     }
 
     private boolean estDansPlateau(int l, int c) {
         return l >= 0 && l < nbLignes && c >= 0 && c < nbColonnes;
     }
 
-    // --- Affichage ---
+    private void reinitialiseTuilesVisitees() {
+        for (int i = 0; i < nbLignes; i++)
+            for (int j = 0; j < nbColonnes; j++)
+                grille[i][j].setVisitee(false);
+    }
+
+    private boolean pilesTuilesVisitees() {
+        for (int i = 0; i < nbLignes; i++)
+            for (int j = 0; j < nbColonnes; j++)
+                if (!grille[i][j].isVisitee()) return false;
+        return true;
+    }
+
+    private ArrayList<Integer> obtenirDirectionsAleatoires() {
+        ArrayList<Integer> directions = new ArrayList<>();
+        for (int i = 0; i < 4; i++) directions.add(i);
+        Collections.shuffle(directions);
+        return directions;
+    }
+
+    // Autres Méthodes
+
+    private void chargerFichier(String nomFichier) {
+        try (BufferedReader fichier = new BufferedReader(new FileReader(nomFichier))) {
+            this.nbLignes = Integer.parseInt(fichier.readLine());
+            this.nbColonnes = Integer.parseInt(fichier.readLine());
+            this.grille = new Tuile[nbLignes][nbColonnes];
+            
+            String[] coordonéesTuiles = fichier.readLine().split(",");
+            this.colonneServeur = Integer.parseInt(coordonéesTuiles[0]);
+            this.ligneServeur = Integer.parseInt(coordonéesTuiles[1]);
+
+            for (int i = 0; i < nbLignes; i++) {
+                String[] valeurs = fichier.readLine().split(";");
+                for (int j = 0; j < nbColonnes; j++) {
+                    grille[i][j] = new Tuile(Integer.parseInt(valeurs[j]));
+                }
+            }
+            if (estDansPlateau(ligneServeur, colonneServeur))
+                grille[ligneServeur][colonneServeur].setServeur(true);
+            detecterFeuilles();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private void initialiserPlateauVide() {
+        this.grille = new Tuile[nbLignes][nbColonnes];
+        for (int i = 0; i < nbLignes; i++)
+            for (int j = 0; j < nbColonnes; j++)
+                grille[i][j] = new Tuile(0);
+    }
+
+    private void placerServeurAleatoirement() {
+        this.ligneServeur = (int) (Math.random() * nbLignes);
+        this.colonneServeur = (int) (Math.random() * nbColonnes);
+        this.grille[ligneServeur][colonneServeur].setServeur(true);
+    }
+
+    private void detecterFeuilles() {
+        for (int i = 0; i < nbLignes; i++) {
+            for (int j = 0; j < nbColonnes; j++) {
+                int code = grille[i][j].getCode();
+                boolean estExtremite = (code == 1 || code == 2 || code == 4 || code == 8);
+                grille[i][j].setFeuille(estExtremite && !grille[i][j].isServeur());
+            }
+        }
+    }
+
+    private void melangerTuiles() {
+        for (int i = 0; i < nbLignes; i++)
+            for (int j = 0; j < nbColonnes; j++) {
+                int nonbreDeRotation = (int) (Math.random() * 4);
+                for (int k = 0; k < nonbreDeRotation; k++)
+                    grille[i][j].rotationDroite();
+            }
+    }
+
+    public void tournerTuile(int ligne, int colonne) {
+        if (estDansPlateau(ligne, colonne))
+            grille[ligne][colonne].rotationDroite();
+    }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        
-        afficherEnteteColonnes(sb);
-        afficherBordureSuperieure(sb);
-        afficherContenuPlateau(sb);
-        afficherBordureInferieure(sb);
-
-        return sb.toString();
+        return afficherNumeroColonne() + afficherBordureSuperieure() + afficherContenuPlateau() + afficherBordureInferieure();
     }
 
-    private void afficherEnteteColonnes(StringBuilder sb) {
-        // Alignement spécifique demandé : 2 espaces puis indices espacés de 2 espaces
-        sb.append("    "); 
-        for (int c = 0; c < nbColonnes; c++) {
-            sb.append("  ").append(c);
-        }
-        sb.append("\n");
+    private String afficherNumeroColonne() {
+        String numeroColonne = "    ";
+        for (int colonne = 0; colonne < nbColonnes; colonne++)
+            numeroColonne += "  " + colonne;
+        return numeroColonne + "\n";
     }
 
-    private void afficherBordureSuperieure(StringBuilder sb) {
-        sb.append("  ").append(Data.asciiGraphic[6]); // Coin HG
-        for (int i = 0; i < nbColonnes; i++) {
-            sb.append(Data.asciiGraphic[10]); // Ligne H
-        }
-        sb.append(Data.asciiGraphic[12]).append("\n"); // Coin HD
+    private String afficherBordureSuperieure() {
+        String BordureSuperieure = "  " + Data.asciiGraphic[6];
+        for (int i = 0; i < nbColonnes; i++)
+            BordureSuperieure += Data.asciiGraphic[10];
+        return BordureSuperieure + Data.asciiGraphic[12] + "\n";
     }
 
-    private void afficherContenuPlateau(StringBuilder sb) {
+    
+    private String afficherContenuPlateau() {
+        String contenuPlateau = "";
         for (int i = 0; i < nbLignes; i++) {
-            sb.append(i).append(" ").append(Data.asciiGraphic[5]); // Indice Ligne + Bord V
+            contenuPlateau += i + " " + Data.asciiGraphic[5];
             for (int j = 0; j < nbColonnes; j++) {
-                sb.append(grille[i][j].toString());
-            }
-            sb.append(Data.asciiGraphic[5]).append("\n"); // Bord V droit
+                contenuPlateau += grille[i][j].toString();
+                }
+            contenuPlateau += Data.asciiGraphic[5] + "\n"; 
         }
-    }
+        return contenuPlateau;
+    }   
 
-    private void afficherBordureInferieure(StringBuilder sb) {
-        sb.append("  ").append(Data.asciiGraphic[3]); // Coin BG
-        for (int i = 0; i < nbColonnes; i++) {
-            sb.append(Data.asciiGraphic[10]);
-        }
-        sb.append(Data.asciiGraphic[9]).append("\n"); // Coin BD
+
+    private String afficherBordureInferieure() {
+        String bordureInferieure = "  " + Data.asciiGraphic[3];
+        for (int i = 0; i < nbColonnes; i++)
+            bordureInferieure += Data.asciiGraphic[10];
+        return bordureInferieure + Data.asciiGraphic[9] + "\n";
     }
 }
