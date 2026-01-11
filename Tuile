@@ -36,35 +36,36 @@ public class Tuile {
     public void setVisitee(boolean visitee) { this.visitee = visitee; }
 
     // --- Méthodes pour les rotations
+
     public void rotationDroite() {
-        // Le bit de poids fort (8=Ouest) doit devenir le bit de poids faible (1=Nord)
-        int bitOuest = (code & 8) != 0 ? 1 : 0;
-        // Décalage à gauche des autres bits et masque pour rester sur 4 bits (15 = 1111)
-        this.code = ((code << 1) & 15) | bitOuest;
+        int bitOuest = this.code & 8; 
+        this.code = (this.code << 1) & 15; 
+        if (bitOuest != 0) {
+            this.code |= 1; 
+        }
     }
 
-    /**
-     * Effectue une rotation de 90 degrés vers la gauche (sens anti-horaire).
-     */
     public void rotationGauche() {
-        // Le bit de poids faible (1=Nord) doit devenir le bit de poids fort (8=Ouest)
-        int bitNord = (code & 1) != 0 ? 8 : 0;
-        this.code = (code >> 1) | bitNord;
+        int bitNord = this.code & 1;
+        this.code = (this.code >> 1);
+        if (bitNord != 0) {
+            this.code |= 8;
+        }
     }
 
     @Override
     public String toString() {
-        // Récupération du caractère graphique depuis Outils.Data
+        // Récupération du caractère graphique de Outils.Data
         String representation = (code >= 0 && code < Data.asciiGraphic.length) 
                                 ? Data.asciiGraphic[code] 
                                 : "   ";
 
-        // Application des couleurs selon l'état de la tuile
+        // Ajout des couleurs selon le type de tuile (rouge si serveur et vert si feuille)
         if (serveur) {
             return Data.RED + representation + Data.RESET;
         }
         if (feuille) {
-            return Data.BLUE + representation + Data.RESET;
+            return Data.GREEN + representation + Data.RESET;
         }
         return representation;
     }
