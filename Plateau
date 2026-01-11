@@ -7,34 +7,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import Outils.Data;
 
-/**
- * Classe gérant le plateau de jeu, son chargement, sa génération et son affichage.
- * * @author lvulin
- */
+// Classe permettant le chargement, la génération et l'affichage du plateau
+
 public class Plateau {
     
-    // Attributs
     private Tuile[][] grille;
     private int nbLignes;
     private int nbColonnes;
     private int ligneServeur;
     private int colServeur;
 
-    // --- Constructeurs ---
+// Partie 1 : Chargement depuis un fichier
 
-    /**
-     * Constructeur Partie 1 : Chargement depuis un fichier.
-     * @param nomFichier Chemin du fichier à charger.
-     */
     public Plateau(String nomFichier) {
         chargerFichier(nomFichier);
     }
 
-    /**
-     * Constructeur Partie 2 : Génération aléatoire.
-     * @param nbLignes Nombre de lignes souhaité.
-     * @param nbColonnes Nombre de colonnes souhaité.
-     */
+// Partie 2 : Génération aléatoire du jeu
+
     public Plateau(int nbLignes, int nbColonnes) {
         this.nbLignes = nbLignes;
         this.nbColonnes = nbColonnes;
@@ -42,8 +32,8 @@ public class Plateau {
         initialiserPlateauVide();
         placerServeurAleatoirement();
         
-        // Algorithme de génération basé sur le Parcours en Profondeur
-        // (Page 7 - Version récursive)
+        // Algorithme de parcours en profondeur pour génerer le plateau 
+
         boolean[][] visite = new boolean[nbLignes][nbColonnes];
         genererParcoursProfondeur(ligneServeur, colServeur, visite);
         
@@ -51,12 +41,10 @@ public class Plateau {
         melangerTuiles();
     }
 
-    // --- Méthodes de Chargement et Initialisation (Code Fragmenté) ---
+// Méthodes de Chargement et d'Initialisation du plateau
 
-    /**
-     * Lit le fichier et initialise le plateau.
-     * (Fragmentation du code)
-     */
+    // Lit le fichier et initialise le plateau
+
     private void chargerFichier(String nomFichier) {
         try (BufferedReader fichier = new BufferedReader(new FileReader(nomFichier))) {
             lireDimensions(fichier);
